@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-labelledby="logo-title logo-description">
+  <title id="logo-title">Younz Digital Center</title>
+  <desc id="logo-description">Geometric YOUNZ wordmark in deep forest green with a lime connection accent.</desc>
+
+  <g fill="#0B241B">
+    <path d="M48 55h52l58 69 58-69h52l-88 105v99h-44v-99L48 55Z"/>
+
+    <path fill-rule="evenodd" d="M292 55h132c39 0 64 24 64 63v78c0 39-25 63-64 63H292c-39 0-64-24-64-63v-78c0-39 25-63 64-63Zm14 46c-20 0-31 11-31 31v50c0 20 11 31 31 31h104c20 0 31-11 31-31v-50c0-20-11-31-31-31H306Z"/>
+
+    <path d="M512 55h47v129c0 20 10 29 30 29h76c20 0 30-9 30-29V55h47v136c0 44-25 68-70 68h-90c-45 0-70-24-70-68V55Z"/>
+
+    <path d="M770 259V55h49l125 132V55h47v204h-47L817 125v134h-47Z"/>
+
+    <path d="M1017 55h157v43l-96 115h100v46h-165v-43l96-115h-92V55Z"/>
+  </g>
+
+  <path fill="#C8FF45" d="M474 130h52v42h-52z"/>
+
+  <text
+    x="770"
+    y="302"
+    fill="#0B241B"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="25"
+    font-weight="700"
+    letter-spacing="7"
+  >DIGITAL CENTER</text>
+</svg>

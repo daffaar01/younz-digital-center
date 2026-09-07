@@ -1,0 +1,6 @@
+@extends('layouts.app')
+@section('content')
+<div><p class="text-sm font-bold text-brand-700">PEMBELIAN</p><h1 class="mt-1 text-3xl font-black text-ink-900">Supplier</h1></div>
+<form method="post" action="{{ route('suppliers.store') }}" class="card mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">@csrf<div class="grid gap-1"><label>Nama supplier</label><input name="name" required></div><div class="grid gap-1"><label>Kontak</label><input name="contact_name"></div><div class="grid gap-1"><label>Telepon</label><input name="phone"></div><div class="grid gap-1"><label>Email</label><input name="email" type="email"></div><div class="flex items-end"><button class="btn-primary">Tambah supplier</button></div></form>
+<div class="table-wrap mt-6"><table class="data-table"><thead><tr><th>Supplier</th><th>Kontak</th><th>Produk</th><th>Status</th></tr></thead><tbody>@forelse($suppliers as $supplier)<tr><td class="font-bold">{{ $supplier->name }}</td><td>{{ $supplier->contact_name }}<p class="text-xs text-slate-500">{{ $supplier->phone }}</p></td><td>{{ $supplier->products()->count() }}</td><td><span class="badge">{{ $supplier->is_active ? 'Aktif' : 'Nonaktif' }}</span></td></tr>@empty<tr><td colspan="4" class="text-center text-slate-500">Belum ada supplier.</td></tr>@endforelse</tbody></table></div><div class="mt-4">{{ $suppliers->links() }}</div>
+@endsection

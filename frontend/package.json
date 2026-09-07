@@ -1,0 +1,37 @@
+{
+    "name": "younz-digital-center-frontend",
+    "private": true,
+    "version": "0.1.0",
+    "type": "module",
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "typecheck": "tsc --noEmit",
+        "check:boundary": "node ../scripts/verify-frontend-boundary.mjs",
+        "check:security": "node scripts/verify-security-hardening.mjs"
+    },
+    "dependencies": {
+        "@radix-ui/react-slot": "^1.3.3",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "lenis": "^1.3.25",
+        "lucide-react": "^1.28.0",
+        "next": "^16.2.12",
+        "react": "^19.2.8",
+        "react-dom": "^19.2.8",
+        "tailwind-merge": "^3.6.0"
+    },
+    "devDependencies": {
+        "@types/node": "^22.15.0",
+        "@types/react": "^19.2.17",
+        "@types/react-dom": "^19.2.3",
+        "autoprefixer": "^10.5.4",
+        "tailwindcss": "^3.4.19",
+        "typescript": "^5.8.3"
+    },
+    "overrides": {
+        "postcss": "8.5.24",
+        "sharp": "0.35.3"
+    }
+}

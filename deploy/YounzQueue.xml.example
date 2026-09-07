@@ -1,0 +1,21 @@
+<!-- Review placeholders before installation. Do not overwrite an installed service blindly. -->
+<service>
+  <id>YounzQueue</id>
+  <name>Younz Queue</name>
+  <description>Laravel default queue worker supervised on Windows.</description>
+  <executable>__PHP_EXE__</executable>
+  <arguments>scripts/queue-supervisor.php run "__PRIVATE_STATE_DIR__"</arguments>
+  <stopexecutable>__PHP_EXE__</stopexecutable>
+  <stoparguments>scripts/queue-supervisor.php stop "__PRIVATE_STATE_DIR__"</stoparguments>
+  <workingdirectory>__REPO_DIR__</workingdirectory>
+  <startmode>Automatic</startmode>
+  <stoptimeout>600 sec</stoptimeout>
+  <onfailure action="restart" delay="10 sec" />
+  <onfailure action="restart" delay="30 sec" />
+  <resetfailure>1 hour</resetfailure>
+  <logpath>__PRIVATE_LOG_DIR__</logpath>
+  <log mode="roll-by-size">
+    <sizeThreshold>10240</sizeThreshold>
+    <keepFiles>5</keepFiles>
+  </log>
+</service>

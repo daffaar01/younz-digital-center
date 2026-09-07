@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo_sqlite
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      - run: npm ci --prefix frontend
+      - run: npm ci --prefix discord-bot
+      - run: npm run check:boundary --prefix frontend
+      - run: npm run typecheck --prefix frontend
+      - run: npm run build --prefix frontend
+      - run: vendor/bin/pint --test
+      - run: composer analyse
+      - run: npm test --prefix discord-bot
+      - run: php artisan test --compact

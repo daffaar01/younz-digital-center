@@ -1,0 +1,23 @@
+import { existsSync, readFileSync } from 'node:fs';
+const root = new URL('../', import.meta.url);
+const adminUrl = new URL('frontend/app/admin/produk-digital/page.tsx', root);
+const publicPage = readFileSync(new URL('frontend/app/produk/page.tsx', root), 'utf8');
+const publicCatalog = readFileSync(new URL('frontend/app/produk/product-catalog.tsx', root), 'utf8');
+const nav = readFileSync(new URL('frontend/app/admin/admin-header.tsx', root), 'utf8');
+const proxy = readFileSync(new URL('frontend/app/api/laravel/[...path]/route.ts', root), 'utf8');
+const failures = [];
+if (!existsSync(adminUrl)) failures.push('halaman admin produk digital belum tersedia');
+const admin = existsSync(adminUrl) ? readFileSync(adminUrl, 'utf8') : '';
+for (const field of ['name="image"', 'name="name"', 'name="category"', 'name="stock"', 'name="price"', 'name="description"', 'name="sort_order"', 'name="is_active"']) if (!admin.includes(field)) failures.push(`field ${field} belum tersedia`);
+if (!admin.includes('FormData') || admin.includes("'Content-Type':'application/json'")) failures.push('upload belum memakai multipart FormData');
+if (!/method\s*:\s*['"]DELETE['"]/.test(admin) || !admin.includes('window.confirm')) failures.push('hapus produk belum memiliki konfirmasi');
+if (!admin.includes('/digital-products')) failures.push('admin belum terhubung API digital products');
+if (!nav.includes("href: '/admin/produk-digital'")) failures.push('navigasi admin produk digital belum tersedia');
+if (!publicPage.includes('/api/v1/digital-products')) failures.push('halaman publik belum mengambil katalog backend');
+if (!publicCatalog.includes('image_url') || !publicCatalog.includes('stock_label')) failures.push('kartu publik belum memakai kontrak backend');
+if (!proxy.includes('content-security-policy') || !proxy.includes('x-content-type-options')) failures.push('proxy gambar belum mempertahankan security headers backend');
+if (!admin.includes('Math.max(0,...items.map') || !admin.includes('loadSequence')) failures.push('urutan default atau stale-load guard admin belum aman');
+if (!publicPage.includes("status: 'ok' | 'unavailable'") || !publicCatalog.includes('unavailable ?')) failures.push('katalog publik belum membedakan kosong dan backend tidak tersedia');
+if (!publicCatalog.includes('key={product.id}')) failures.push('kartu publik belum memakai ID stabil');
+if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
+console.log('Digital product CRUD frontend contract verified.');

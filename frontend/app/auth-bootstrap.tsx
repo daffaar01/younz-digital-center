@@ -1,0 +1,3 @@
+'use client';
+import {useEffect} from 'react';
+export default function AuthBootstrap(){useEffect(()=>{const hash=window.location.hash;if(!hash.startsWith('#ydc_token='))return;const token=decodeURIComponent(hash.slice(11));if(token){localStorage.setItem('ydc_api_token',token);history.replaceState(null,'',window.location.pathname+window.location.search);window.dispatchEvent(new Event('ydc-auth'))}},[]);return null}

@@ -1,0 +1,65 @@
+import { existsSync, readFileSync } from 'node:fs';
+
+const root = new URL('../', import.meta.url);
+const productPageUrl = new URL('frontend/app/produk/page.tsx', root);
+const productCatalogUrl = new URL('frontend/app/produk/catalog.ts', root);
+const productMigrationUrl = new URL('database/migrations/2026_08_10_140000_create_digital_products_table.php', root);
+const landing = readFileSync(new URL('frontend/app/page.tsx', root), 'utf8');
+const landingNavigation = readFileSync(new URL('frontend/app/landing-showcase.tsx', root), 'utf8');
+const siteHeader = readFileSync(new URL('frontend/app/site-header.tsx', root), 'utf8');
+const orderPage = readFileSync(new URL('frontend/app/pesan/page.tsx', root), 'utf8');
+const orderForm = readFileSync(new URL('frontend/app/pesan/order-form.tsx', root), 'utf8');
+
+const requiredProducts = ['Discord Nitro', 'Video Premium', 'YouTube Premium', 'Claude AI', 'ChatGPT', 'Grok', 'Leonardo AI'];
+const failures = [];
+if (!existsSync(productPageUrl)) failures.push('halaman /produk belum tersedia');
+if (!existsSync(productCatalogUrl)) failures.push('sumber data katalog mandiri belum tersedia');
+const productPage = existsSync(productPageUrl) ? readFileSync(productPageUrl, 'utf8') : '';
+const productCatalog = existsSync(productCatalogUrl) ? readFileSync(productCatalogUrl, 'utf8') : '';
+const productMigration = readFileSync(productMigrationUrl, 'utf8');
+const productCatalogView = readFileSync(new URL('frontend/app/produk/product-catalog.tsx', root), 'utf8');
+const productImage = readFileSync(new URL('frontend/app/produk/product-image.tsx', root), 'utf8');
+const sitemap = readFileSync(new URL('frontend/app/sitemap.ts', root), 'utf8');
+const productDetailPageUrl = new URL('frontend/app/produk/[id]/page.tsx', root);
+const productDetailActionsUrl = new URL('frontend/app/produk/[id]/product-detail-actions.tsx', root);
+const productDetailPage = existsSync(productDetailPageUrl) ? readFileSync(productDetailPageUrl, 'utf8') : '';
+const productDetailActions = existsSync(productDetailActionsUrl) ? readFileSync(productDetailActionsUrl, 'utf8') : '';
+if (!landingNavigation.includes('href="/produk"')) failures.push('menu Produk landing belum mengarah ke /produk');
+if (!siteHeader.includes('href="/produk"')) failures.push('SiteHeader belum memiliki menu Produk');
+if (landing.includes('id="produk-digital"') || landing.includes('blue-digital-product-grid')) failures.push('katalog penuh masih diduplikasi di landing');
+if (!productPage.includes('/api/v1/digital-products')) failures.push('halaman /produk belum membaca katalog backend');
+if (productPage.includes('return digitalProducts')) failures.push('fallback statis dapat menghidupkan kembali produk yang dinonaktifkan admin');
+if (productPage.includes('product-page-hero') || productPage.includes('Satu tempat untuk')) failures.push('hero produk yang diminta dihapus masih tersedia');
+for (const product of requiredProducts) if (!productMigration.includes(product)) failures.push(`produk awal ${product} belum tersedia di migration`);
+if (!productCatalog.includes('image_url:') || !productCatalog.includes('stock_label:') || !productCatalog.includes('price_label:')) failures.push('kontrak foto/stok/harga produk belum tersedia');
+if (!productCatalogView.includes('<ProductImage') || !productCatalogView.includes('product.stock_label') || !productCatalogView.includes('product.price_label')) failures.push('kartu belum merender foto, stok, dan harga produk');
+if (!productImage.includes('MAX_CONCURRENT = 1') || !productImage.includes('URL.revokeObjectURL')) failures.push('loader foto belum membatasi concurrency dan membersihkan blob URL');
+if (!productCatalogView.includes('Katalog sedang tidak tersedia')) failures.push('empty state katalog belum tersedia');
+if (!productCatalog.includes('stock_label: string')) failures.push('status stok backend belum menjadi bagian kontrak publik');
+if (!productCatalogView.includes('`/produk/${product.id}`')) failures.push('kartu katalog belum mengarah ke halaman detail produk');
+if (!productDetailPage.includes('generateMetadata')) failures.push('halaman detail belum memiliki metadata khusus produk');
+if (!productDetailPage.includes('notFound()')) failures.push('halaman detail belum fail-closed untuk produk tidak tersedia');
+if (!productDetailPage.includes('ProductDetailActions')) failures.push('halaman detail belum memiliki aksi pesanan interaktif');
+if (!productDetailActions.includes('navigator.share')) failures.push('halaman detail belum mendukung native share');
+if (!productDetailActions.includes('localStorage')) failures.push('favorit lokal belum tersedia');
+if (!productDetailActions.includes('quantity')) failures.push('aksi pesanan belum mempertahankan kuantitas');
+if (!productDetailActions.includes("effectiveStock === 0") || !productDetailActions.includes('Tanyakan lewat WhatsApp') || !productDetailActions.includes('https://wa.me/628219207240')) failures.push('produk atau varian stok nol belum memiliki CTA inquiry WhatsApp yang jujur');
+if (productDetailActions.includes('disabled={variant.stock === 0}') || !productDetailActions.includes('Habis · dapat ditanyakan')) failures.push('varian stok nol harus tetap dapat dipilih untuk inquiry');
+if (!productPage.includes('Tanyakan produk lewat WhatsApp') || productPage.includes('source=digital-product&product=')) failures.push('CTA produk lain harus mempertahankan intent melalui inquiry WhatsApp');
+if (!productCatalog.includes('DigitalProductVariant') || !productCatalog.includes('variants: DigitalProductVariant[]')) failures.push('kontrak varian durasi belum tersedia');
+if (!productDetailActions.includes('Pilih durasi') || !productDetailActions.includes("params.set('variant_id'")) failures.push('detail produk belum mewajibkan dan meneruskan pilihan durasi');
+if (productDetailPage.match(/penilaian|terjual|review/i)) failures.push('halaman detail tidak boleh mengarang rating, penjualan, atau review');
+if (!sitemap.includes('/produk/${product.id}')) failures.push('sitemap belum memuat halaman detail produk aktif');
+if (!orderPage.includes('params.product')) failures.push('halaman pesanan belum membaca parameter product');
+if (!orderPage.includes('product?.variants.find') || !orderPage.includes('requestedVariantId')) failures.push('halaman pesanan belum memvalidasi variant_id terhadap respons backend');
+if (!orderForm.includes('initialProduct')) failures.push('form belum menerima prefill produk');
+if (!orderForm.includes('name="variant_id"') || !orderForm.includes('missingVariant')) failures.push('form checkout belum mengirim varian tervalidasi atau memblokir durasi yang hilang');
+if (!orderForm.includes('crypto.randomUUID()')) failures.push('checkout digital belum memakai UUID idempotensi');
+if (!orderForm.includes('payload.payment?.redirect_url')) failures.push('checkout digital belum mengikuti redirect Midtrans dari backend');
+if (!orderForm.includes("isDigital ? '/backend/v1/public/orders'")) failures.push('checkout digital belum memakai endpoint publik yang membuat pembayaran');
+
+if (failures.length) {
+  console.error(failures.join('\n'));
+  process.exit(1);
+}
+console.log(`Standalone digital product page verified: ${requiredProducts.length} products, /produk navigation, no landing duplication, and order prefill.`);

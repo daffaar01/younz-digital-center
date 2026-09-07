@@ -1,0 +1,26 @@
+{
+  "name": "younz-discord-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bot Discord Younz Digital Center: notifikasi bisnis, asisten AI, moderasi, dan tiket support.",
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "start": "npm install --omit=dev --no-audit --no-fund --loglevel=error && node src/index.js",
+    "serve": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "deploy": "node src/deploy-commands.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "discord.js": "14.27.0",
+    "pino": "9.13.1",
+    "undici": "6.28.0"
+  },
+  "overrides": {
+    "undici": "6.28.0"
+  }
+}

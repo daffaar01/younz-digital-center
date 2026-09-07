@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow,noarchive">
+    <title>Invoice {{ $order->order_number }} · Younz Digital Center</title>
+    <style>
+        *{box-sizing:border-box}body{margin:0;background:#eef2f0;color:#17211d;font:13px/1.5 Arial,sans-serif}.paper{width:min(210mm,calc(100% - 2rem));min-height:297mm;margin:20px auto;background:#fff;padding:16mm;box-shadow:0 22px 70px -48px #071a16}.header{display:flex;align-items:flex-start;justify-content:space-between;gap:30px;border-bottom:3px solid #132016;padding-bottom:20px}.brand{display:flex;gap:12px}.mark{display:grid;width:46px;height:46px;place-items:center;border-radius:12px;background:#006c49;color:#fff;font-weight:900}.brand div{display:grid;gap:3px}.brand small,.party span{color:#637169;font-size:11px}.identity{text-align:right}.identity h1{margin:0;font-size:38px;letter-spacing:.08em}.identity p{margin:3px 0}.status{display:inline-block;margin-top:8px;border-radius:30px;background:#dff8e9;padding:5px 10px;color:#047857;font-size:10px;font-weight:900}.parties{display:grid;grid-template-columns:1fr 1fr;gap:35px;padding:28px 0}.party{display:grid;gap:4px}.party>small,.payment>small{color:#728078;font-size:10px;font-weight:900;letter-spacing:.12em}.items{overflow:hidden;border:1px solid #dce5df;border-radius:12px}.items table{width:100%;border-collapse:collapse}.items th{background:#132016;padding:12px;color:#fff;text-align:left}.items th:nth-child(n+3),.items td:nth-child(n+3){text-align:right}.items td{padding:14px 12px;border-bottom:1px solid #edf1ee;vertical-align:top}.items td small{display:block;margin-top:4px;color:#74817a}.summary{display:grid;grid-template-columns:1fr 300px;gap:30px;margin-top:24px}.payment{border-radius:12px;background:#f5f8f6;padding:15px}.rows{display:grid;gap:7px;margin:10px 0 0}.row{display:flex;justify-content:space-between;gap:15px}.row span:last-child{text-align:right;font-weight:700;overflow-wrap:anywhere}.totals{border-top:2px solid #132016;padding-top:12px}.grand{margin:8px 0;padding:10px 0;border-block:1px solid #132016;font-size:16px;font-weight:900}.service{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}.service div{display:grid;gap:5px;border:1px solid #dce5df;border-radius:10px;padding:12px}.service small{color:#728078;font-size:9px;font-weight:900}.token{display:grid;gap:6px;margin-top:24px;border:1px solid #9bddbd;border-radius:12px;background:#effcf5;padding:15px}.token strong{overflow-wrap:anywhere;font-family:monospace}.footer{margin-top:40px;border-top:1px solid #dce5df;padding-top:14px;color:#637169;font-size:11px}.actions{display:flex;justify-content:center;gap:8px;margin:18px}.actions button,.actions a{border:0;border-radius:8px;background:#047857;color:#fff;padding:10px 14px;text-decoration:none;font-weight:700;cursor:pointer}.actions a{background:#334155}@media(max-width:760px){.paper{min-height:0;padding:20px}.header{flex-direction:column}.identity{text-align:left}.parties,.summary,.service{grid-template-columns:1fr}.items{overflow-x:auto}.items table{min-width:650px}}@media print{body{background:#fff}.paper{width:100%;min-height:0;margin:0;padding:0;box-shadow:none}.actions{display:none}.header,.items,.summary,.service,.token{break-inside:avoid}@page{size:A4;margin:14mm}}
+    </style>
+</head>
+<body>
+@php
+    $offline = str_starts_with((string) $order->source_reference, 'offline:');
+    $whatsapp = str_starts_with((string) $order->source_reference, 'whatsapp:');
+    $payment = $offline ? 'Tunai' : strtoupper(str_replace('_', ' ', $order->midtrans_payment_type ?: 'Midtrans'));
+    $source = $offline ? 'Transaksi toko' : ($whatsapp ? 'WhatsApp' : 'Website');
+    $customer = $order->provider_customer_name ?: $order->customer_name;
+@endphp
+<main class="paper">
+    <header class="header">
+        <div class="brand"><span class="mark">Y</span><div><strong>YOUNZ DIGITAL CENTER</strong><small>{{ config('services.store.address') }}</small><small>WhatsApp {{ config('services.whatsapp.display_number') }}</small></div></div>
+        <div class="identity"><h1>INVOICE</h1><p><strong>{{ $order->order_number }}</strong></p><p>Terbit: {{ $order->created_at->translatedFormat('d F Y') }}</p><span class="status">{{ strtoupper($order->payment_status->label()) }}</span></div>
+    </header>
+    <section class="parties">
+        <div class="party"><small>DITERBITKAN OLEH</small><strong>Younz Digital Center</strong><span>{{ config('services.store.address') }}</span><span>WhatsApp {{ config('services.whatsapp.display_number') }}</span><span>{{ config('services.store.open_hours') }}</span></div>
+        <div class="party"><small>DITAGIHKAN KEPADA</small><strong>{{ $customer }}</strong><span>Kontak: {{ $order->maskedCustomerPhone() }}</span>@if($order->maskedCustomerEmail())<span>Email: {{ $order->maskedCustomerEmail() }}</span>@endif<span>Tujuan layanan: {{ $order->maskedDestination() }}</span></div>
+    </section>
+    <section class="items"><table><thead><tr><th>Deskripsi</th><th>SKU</th><th>Qty</th><th>Harga</th><th>Jumlah</th></tr></thead><tbody><tr><td><strong>{{ $order->product_name }}</strong><small>{{ collect([$order->transaction_type->label(), $order->category, $order->brand])->filter()->join(' · ') }}</small></td><td>{{ $order->sku }}</td><td>1</td><td>Rp {{ number_format($order->selling_price, 0, ',', '.') }}</td><td>Rp {{ number_format($order->selling_price, 0, ',', '.') }}</td></tr></tbody></table></section>
+    <section class="summary">
+        <div class="payment"><small>INFORMASI PEMBAYARAN</small><div class="rows"><div class="row"><span>Metode</span><span>{{ $payment }}</span></div><div class="row"><span>Tanggal bayar</span><span>{{ $order->paid_at?->format('d/m/Y H:i:s') }} WIB</span></div><div class="row"><span>Kanal</span><span>{{ $source }}</span></div>@if(!$offline && $order->midtrans_transaction_id)<div class="row"><span>Ref. pembayaran</span><span>{{ $order->midtrans_transaction_id }}</span></div>@endif@if($order->digiflazz_reference)<div class="row"><span>Ref. provider</span><span>{{ $order->digiflazz_reference }}</span></div>@endif</div></div>
+        <div class="rows totals"><div class="row"><span>Subtotal</span><span>Rp {{ number_format($order->selling_price, 0, ',', '.') }}</span></div><div class="row"><span>Biaya admin</span><span>Rp {{ number_format($order->admin_fee, 0, ',', '.') }}</span></div><div class="row grand"><span>Total</span><span>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span></div><div class="row"><span>Telah dibayar</span><span>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span></div>@if($order->payment_status === \App\Enums\TopupPaymentStatus::Refunded)<div class="row"><span>Dikembalikan</span><span>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span></div>@endif<div class="row"><span>Sisa tagihan</span><span>Rp 0</span></div></div>
+    </section>
+    <section class="service"><div><small>STATUS PEMBAYARAN</small><strong>{{ $order->payment_status->label() }}</strong></div><div><small>STATUS LAYANAN</small><strong>{{ $order->fulfillment_status->label() }}</strong></div>@if($order->fulfilled_at)<div><small>SELESAI DIPROSES</small><strong>{{ $order->fulfilled_at->format('d/m/Y H:i:s') }} WIB</strong></div>@endif</section>
+    @if($order->serial_number)<section class="token"><small>NOMOR SERI / TOKEN</small><strong>{{ $order->serial_number }}</strong></section>@endif
+    <footer class="footer"><p>Invoice elektronik ini diterbitkan otomatis setelah pembayaran terverifikasi dan merupakan bukti transaksi yang sah dari Younz Digital Center.</p><p>Untuk bantuan, sertakan nomor invoice <strong>{{ $order->order_number }}</strong> saat menghubungi WhatsApp {{ config('services.whatsapp.display_number') }}.</p></footer>
+</main>
+<div class="actions"><button type="button" onclick="window.print()">Cetak / Simpan PDF</button><a href="{{ $order->temporarySignedUrl('topup.show') }}">Kembali</a></div>
+</body>
+</html>

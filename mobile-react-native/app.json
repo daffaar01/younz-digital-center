@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Younz Digital Center",
+    "slug": "younz-digital-center-mobile",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "scheme": "younz",
+    "android": {
+      "package": "com.younzdigitalcenter.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#100c2b"
+      }
+    }
+  }
+}

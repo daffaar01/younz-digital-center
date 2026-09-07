@@ -1,0 +1,29 @@
+<service>
+  <id>YounzWhatsAppGateway</id>
+  <name>Younz WhatsApp Gateway</name>
+  <description>WhatsApp gateway Younz; uses the existing session, no interactive login required.</description>
+  <executable>__NODE_EXE__</executable>
+  <arguments>"__GATEWAY_DIR__\src\server.js"</arguments>
+  <workingdirectory>__GATEWAY_DIR__</workingdirectory>
+  <startmode>Automatic</startmode>
+  <delayedAutoStart>true</delayedAutoStart>
+  <serviceaccount>
+    <domain>NT AUTHORITY</domain>
+    <user>LocalService</user>
+  </serviceaccount>
+  <env name="NODE_ENV" value="production" />
+  <env name="WHATSAPP_BIND_HOST" value="127.0.0.1" />
+  <env name="PORT" value="__PORT__" />
+  <env name="WHATSAPP_AUTH_DIR" value="__AUTH_DIR__" />
+  <stoptimeout>30 sec</stoptimeout>
+  <stopparentprocessfirst>true</stopparentprocessfirst>
+  <onfailure action="restart" delay="10 sec" />
+  <onfailure action="restart" delay="30 sec" />
+  <onfailure action="restart" delay="60 sec" />
+  <resetfailure>1 hour</resetfailure>
+  <logpath>__LOG_DIR__</logpath>
+  <log mode="roll-by-size">
+    <sizeThreshold>10240</sizeThreshold>
+    <keepFiles>5</keepFiles>
+  </log>
+</service>
